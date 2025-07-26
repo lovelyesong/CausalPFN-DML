@@ -70,7 +70,7 @@ def load_all_results(dataset_name: str, artifact_dir: str) -> dict[str, tuple[np
     # go through all the files in the path
     for file in os.listdir(artifact_dir):
         if file.startswith(dataset_name) and file.endswith(".npz"):
-            method_name = file.split("_")[1].split("[")[0]
+            method_name = file.split("_")[-1].split("[")[0]
             idx = int(file.split("[")[1].split("]")[0]) if "[" in file else 0
             loaded_dict = load_results(dataset_name, method_name, idx, artifact_dir)
             if method_name not in results:

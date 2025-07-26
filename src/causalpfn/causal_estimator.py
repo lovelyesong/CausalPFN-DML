@@ -391,7 +391,7 @@ class CausalEstimator(ABC):
         self.stratifier = GradientBoostingRegressor(
             n_estimators=100,
             max_depth=6,
-            min_samples_leaf=int(X.shape[0] / 100),
+            min_samples_leaf=max(2, int(X.shape[0] / 100)),
             random_state=111,
         )
         self.stratifier.fit(feat_arr, y)

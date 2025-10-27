@@ -181,7 +181,7 @@ def graph_theme(colours: t.List[str] = ibm.values(), **kwargs):
             "grid.color": "#b0b0b0",
             "grid.linestyle": "--",
             "grid.linewidth": 0.6,
-            # following requres latex
+            # following requires latex
             "font.family": "serif",
             "font.serif": "Computer Modern",
             "font.size": 7,

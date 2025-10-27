@@ -104,6 +104,18 @@ class EconMLBaseline(BaselineModel):
         cate_pred = model.effect(X_test)
         return self._unscale_res(cate_pred, scaler_y)
 
+    def estimate_ci(self, X_train, t_train, y_train, X_test, alpha=0.05):
+        # — scale
+        X_train, X_test, _ = self._scale_x(X_train, X_test)
+        y_train, scaler_y = self._scale_y(y_train)
+
+        model = self._get_model(X_train, t_train, y_train)
+        if not hasattr(model, "effect_interval"):
+            raise ValueError("The model does not support confidence intervals.")
+        model.fit(Y=y_train, T=t_train, X=X_train)
+        lower_bound, upper_bound = model.effect_interval(X_test, T0=0, T1=1, alpha=alpha)
+        return self._unscale_res(lower_bound, scaler_y), self._unscale_res(upper_bound, scaler_y)
+
 
 class ForestDMLBaseline(EconMLBaseline):
 

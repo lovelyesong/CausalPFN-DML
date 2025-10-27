@@ -1,6 +1,5 @@
 # A synthetic polynomial dataset for evaluating CATE estimation methods.
 
-import os
 from typing import Callable, List, Tuple
 
 import numpy as np
@@ -146,11 +145,7 @@ class PolynomialDataset(EvalDatasetCatalog):
     def __len__(self):
         return self.n_tables
 
-    def __getitem__(self, index) -> Tuple[CATE_Dataset, ATE_Dataset]:
-        if index >= self.n_tables:
-            raise IndexError("Index out of range for the dataset catalog")
-
-        np.random.seed(self.seeds[index])
+    def get_covariates_T_Y0_Y1_E_Y0_E_Y1_outcomes(self):
 
         n_dims = self.x_dim_dist()
         covariates = self.sample_covariates((self.n_samples, n_dims))
@@ -182,6 +177,7 @@ class PolynomialDataset(EvalDatasetCatalog):
 
         y0 = E_y0 + self.sample_exogenous_noise((self.n_samples,))
         y1 = E_y1 + self.sample_exogenous_noise((self.n_samples,))
+
         outcomes = np.where(treatments == 1, y1, y0)
 
         if self.standardize_outcome:
@@ -191,6 +187,16 @@ class PolynomialDataset(EvalDatasetCatalog):
         outcomes = (outcomes - outcomes_mean) / outcomes_std
         y0, y1 = (y0 - outcomes_mean) / outcomes_std, (y1 - outcomes_mean) / outcomes_std
         E_y0, E_y1 = (E_y0 - outcomes_mean) / outcomes_std, (E_y1 - outcomes_mean) / outcomes_std
+
+        return covariates, treatments, y0, y1, E_y0, E_y1, outcomes
+
+    def __getitem__(self, index) -> Tuple[CATE_Dataset, ATE_Dataset]:
+        if index >= self.n_tables:
+            raise IndexError("Index out of range for the dataset catalog")
+
+        np.random.seed(self.seeds[index])
+
+        covariates, treatments, _, _, E_y0, E_y1, outcomes = self.get_covariates_T_Y0_Y1_E_Y0_E_Y1_outcomes()
 
         cate = E_y1 - E_y0
 

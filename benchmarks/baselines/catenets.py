@@ -1,7 +1,7 @@
 import numpy as np
 
 try:
-    from catenets.models.jax import RANet, SNet1, SNet2
+    from catenets.models.jax import RANet, SNet1, SNet2, SNet, FlexTENet, XNet
 except ImportError:
     print("catenets not installed, skipping CATENet baselines.")
 
@@ -63,6 +63,7 @@ class CATENetBaseline(BaselineModel):
             cate_pred_s = self.model.predict(X_te_s).ravel()
             cate_pred = self._unscale_cate(cate_pred_s, scaler_y)
         except Exception as e:
+            print(e)
             cate_pred = np.zeros(X_te.shape[0], dtype=np.float32)
         return cate_pred
 
@@ -86,4 +87,22 @@ class TarNetBaseline(CATENetBaseline):
 class DragonNetBaseline(CATENetBaseline):
     def __init__(self, hpo: bool = True, batch_size: int = 512):
         model = SNet2(batch_size=batch_size)
+        super().__init__(model, hpo)
+
+
+class SNetBaseline(CATENetBaseline):
+    def __init__(self, hpo: bool = True, batch_size: int = 512):
+        model = SNet(batch_size=batch_size)
+        super().__init__(model, hpo)
+
+
+class FlexTENetBaseline(CATENetBaseline):
+    def __init__(self, hpo: bool = True, batch_size: int = 512):
+        model = FlexTENet(batch_size=batch_size)
+        super().__init__(model, hpo)
+
+
+class XNetBaseline(CATENetBaseline):
+    def __init__(self, hpo: bool = True, batch_size: int = 512):
+        model = XNet(batch_size=batch_size)
         super().__init__(model, hpo)

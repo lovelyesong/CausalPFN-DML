@@ -249,8 +249,8 @@ class InContextModel(nn.Module):
         y_context: torch.Tensor,
         X_query: torch.Tensor,
         t_query: torch.Tensor,
+        temperature: torch.Tensor, # shape: (num_temperatures, ),
         n_samples: int | None = None,
-        temperature: torch.Tensor | None = None,  # shape: (num_temperatures, )
     ) -> torch.Tensor | Tuple[torch.Tensor, torch.Tensor]:
 
         y0_shift, y0_scale, y1_shift, y1_scale = self._get_y0_y1_shift_scale(t_context, y_context)
@@ -290,10 +290,7 @@ class InContextModel(nn.Module):
         y0_scale, y0_shift = y0_scale.unsqueeze(1), y0_shift.unsqueeze(1)  # shape: (batch_size, 1, query_len)
         t_query = t_query.unsqueeze(1)  # shape: (batch_size, 1, query_len)
 
-        if temperature is None:
-            logits = logits.unsqueeze(1)
-        if temperature is not None:
-            temperature = temperature[None, :, None, None]  # shape: (1, num_temperatures, 1, 1)
+        temperature = temperature[None, :, None, None]  # shape: (1, num_temperatures, 1, 1)
 
         logits = logits / temperature  # Apply temperature scaling
 

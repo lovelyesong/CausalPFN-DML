@@ -158,14 +158,12 @@ To fully reproduce the [paper](https://arxiv.org/abs/2506.07918) results, see th
 If you use CausalPFN in your research, please cite our paper:
 
 ```bibtex
-@misc{balazadeh2025causalpfn,
+@inproceedings{balazadeh2025causalpfn,
       title={CausalPFN: Amortized Causal Effect Estimation via In-Context Learning}, 
       author={Vahid Balazadeh and Hamidreza Kamkari and Valentin Thomas and Benson Li and Junwei Ma and Jesse C. Cresswell and Rahul G. Krishnan},
-      year={2025},
-      eprint={2506.07918},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2506.07918}, 
+      booktitle = {Advances in Neural Information Processing Systems},
+      volume = {38},
+      year = {2025}
 }
 ```
 

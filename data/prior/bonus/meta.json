@@ -1,0 +1,15 @@
+{
+  "bonus_dir": "/home/yesong/CausalPFN-DML/notebooks/bonus_benchmarks/data/bonus",
+  "out_dir": "/home/yesong/CausalPFN-DML/data/prior/bonus",
+  "shards": 50,
+  "n_per_shard": 4096,
+  "noise": 1.0,
+  "overlap": "medium",
+  "seed": 2025,
+  "families": [
+    "linear",
+    "poly",
+    "rff",
+    "mlp"
+  ]
+}

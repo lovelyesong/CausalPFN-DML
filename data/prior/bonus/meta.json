@@ -1,15 +1,20 @@
 {
-  "bonus_dir": "/home/yesong/CausalPFN-DML/notebooks/bonus_benchmarks/data/bonus",
+  "base_paths": [
+    "/home/yesong/CausalPFN-DML/notebooks/bonus_benchmarks/data/bonus/X.npy"
+  ],
   "out_dir": "/home/yesong/CausalPFN-DML/data/prior/bonus",
   "shards": 50,
   "n_per_shard": 4096,
-  "noise": 1.0,
-  "overlap": "medium",
-  "seed": 2025,
+  "mu_mode": "columns",
   "families": [
     "linear",
     "poly",
     "rff",
     "mlp"
-  ]
+  ],
+  "noise": 1.0,
+  "overlap": "medium",
+  "xi": 0.5,
+  "seed": 2025,
+  "bins_pct": 0.995
 }

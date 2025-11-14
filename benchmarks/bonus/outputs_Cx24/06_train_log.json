@@ -1,0 +1,102 @@
+[
+  {
+    "epoch": 1,
+    "elapsed_sec": 1.22,
+    "loss_prior": 2.4662619471549987,
+    "loss_penalty": 0.4678726078569889,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 2,
+    "elapsed_sec": 2.19,
+    "loss_prior": 2.404974598288536,
+    "loss_penalty": 0.4659625640511513,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 3,
+    "elapsed_sec": 3.71,
+    "loss_prior": 2.4601478230953218,
+    "loss_penalty": 0.4230290046334267,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 4,
+    "elapsed_sec": 5.46,
+    "loss_prior": 2.4111201494932173,
+    "loss_penalty": 0.41499412834644317,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 5,
+    "elapsed_sec": 7.19,
+    "loss_prior": 2.429480829834938,
+    "loss_penalty": 0.3679964233934879,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 6,
+    "elapsed_sec": 8.95,
+    "loss_prior": 2.4327750957012175,
+    "loss_penalty": 0.3498345188051462,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 7,
+    "elapsed_sec": 10.66,
+    "loss_prior": 2.4562026441097258,
+    "loss_penalty": 0.306831593438983,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 8,
+    "elapsed_sec": 12.41,
+    "loss_prior": 2.470371645092964,
+    "loss_penalty": 0.2851196088641882,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 9,
+    "elapsed_sec": 14.16,
+    "loss_prior": 2.4714715844392776,
+    "loss_penalty": 0.26604867577552793,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  },
+  {
+    "epoch": 10,
+    "elapsed_sec": 15.89,
+    "loss_prior": 2.478718730807304,
+    "loss_penalty": 0.25205512315034867,
+    "n_prior": 204800,
+    "n_bonus_penalty": 102400,
+    "steps_prior": 200,
+    "steps_penalty": 200
+  }
+]

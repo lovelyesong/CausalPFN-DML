@@ -1,0 +1,9 @@
+{
+  "bonus_dir": "/home/yesong/CausalPFN-DML/notebooks/bonus_benchmarks/data/bonus",
+  "dml_outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs",
+  "shift_outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs_noshift",
+  "outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs_CPFN_official_noshift",
+  "gamma": 0.0,
+  "mean_zeta": 0.0,
+  "note": "Official CausalPFN (CATEEstimator.fit/estimate_cate) + DML anchor + (gamma*zeta) blending. Safe when zeta is missing."
+}

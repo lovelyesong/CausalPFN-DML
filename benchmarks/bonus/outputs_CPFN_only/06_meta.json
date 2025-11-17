@@ -1,0 +1,5 @@
+{
+  "mode": "pfn_only",
+  "bonus_dir": "/home/yesong/CausalPFN-DML/notebooks/bonus_benchmarks/data/bonus",
+  "outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs_CPFN_only"
+}

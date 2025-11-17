@@ -1,4 +1,13 @@
 # benchmarks/bonus/05_shift_score.py
+
+### Termina에 아래와 같이 zeta mean 확인 가능
+# python - <<'PY'
+# import numpy as np
+# z = np.load("benchmarks/bonus/outputs/05_zeta_bonus.npy")
+# print("mean(zeta)=", z.mean())
+# PY
+
+
 import os, glob, json
 import numpy as np
 from pathlib import Path

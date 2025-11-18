@@ -1,0 +1,39 @@
+{
+  "mode": "paper",
+  "reps": 20,
+  "kfold": 5,
+  "waae_per_run": [
+    0.17875252120236274,
+    0.19998820418585844,
+    0.08516261429851207,
+    0.12893078322035584,
+    0.23049304466150303,
+    0.19341368601822018,
+    0.2507539499879094,
+    0.09374647300414979,
+    0.15008120296936125,
+    0.11896416072074889,
+    0.1994353981900856,
+    0.06847038720724372,
+    0.08155754690755697,
+    0.03623768831613275,
+    0.0945715810953811,
+    0.21423558324756614,
+    0.08907257353331346,
+    0.11458187078489793,
+    0.09556022993044004,
+    0.08391239961518285
+  ],
+  "waae_mean_over_runs": 0.13539609495483912,
+  "waae_std_over_runs": 0.061799470031625045,
+  "waae_on_averaged_predictions": 0.030231794789155855,
+  "paths": {
+    "outputs_dir": "benchmarks/bonus/outputs_mlp05",
+    "avg_mu_files": {
+      "mu0_hat": "benchmarks/bonus/outputs_mlp05/mu0_hat.npy",
+      "mu1_hat": "benchmarks/bonus/outputs_mlp05/mu1_hat.npy",
+      "e_hat": "benchmarks/bonus/outputs_mlp05/e_hat.npy"
+    }
+  },
+  "note": "WAAE per r69 uses DR/AIPW means in 'paper' mode; values aggregated across repeated runs."
+}

@@ -1,0 +1,9 @@
+{
+  "mode": "pfn_plus_dml",
+  "bonus_dir": "/home/yesong/CausalPFN-DML/notebooks/bonus_benchmarks/data/bonus",
+  "dml_outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs_mlp05",
+  "shift_outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs_mlp05",
+  "outputs_dir": "/home/yesong/CausalPFN-DML/benchmarks/bonus/outputs_CPFN_tau",
+  "gamma": 0.8,
+  "mean_zeta": 0.0
+}

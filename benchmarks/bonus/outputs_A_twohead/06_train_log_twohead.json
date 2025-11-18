@@ -1,71 +1,71 @@
 [
   {
     "epoch": 1,
-    "elapsed_sec": 1.5485403537750244,
-    "loss_mse": 2.1925491553545,
+    "elapsed_sec": 1.812199354171753,
+    "loss_mse": 2.195633989274502,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 2,
-    "elapsed_sec": 2.8809096813201904,
-    "loss_mse": 2.121203545629978,
+    "elapsed_sec": 3.146401882171631,
+    "loss_mse": 2.1223640835285185,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 3,
-    "elapsed_sec": 4.227889776229858,
-    "loss_mse": 2.159931793808937,
+    "elapsed_sec": 4.472919464111328,
+    "loss_mse": 2.1605253481864928,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 4,
-    "elapsed_sec": 5.636962890625,
-    "loss_mse": 2.1267327421903612,
+    "elapsed_sec": 5.793326139450073,
+    "loss_mse": 2.1275235348939896,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 5,
-    "elapsed_sec": 7.387704372406006,
-    "loss_mse": 2.1209016466140747,
+    "elapsed_sec": 7.39568018913269,
+    "loss_mse": 2.122280653119087,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 6,
-    "elapsed_sec": 9.23642110824585,
-    "loss_mse": 2.1097284919023513,
+    "elapsed_sec": 9.107818126678467,
+    "loss_mse": 2.110397253930569,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 7,
-    "elapsed_sec": 11.085171461105347,
-    "loss_mse": 2.125939277112484,
+    "elapsed_sec": 10.812255382537842,
+    "loss_mse": 2.1264248448610306,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 8,
-    "elapsed_sec": 12.832111835479736,
-    "loss_mse": 2.078366302549839,
+    "elapsed_sec": 12.510441303253174,
+    "loss_mse": 2.078455861210823,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 9,
-    "elapsed_sec": 14.448030471801758,
-    "loss_mse": 2.1106316363811493,
+    "elapsed_sec": 14.213055849075317,
+    "loss_mse": 2.1097689601778984,
     "steps_per_epoch": 400,
     "batch_size": 1024
   },
   {
     "epoch": 10,
-    "elapsed_sec": 16.07871103286743,
-    "loss_mse": 2.128001368045807,
+    "elapsed_sec": 15.910468578338623,
+    "loss_mse": 2.1293760496377945,
     "steps_per_epoch": 400,
     "batch_size": 1024
   }

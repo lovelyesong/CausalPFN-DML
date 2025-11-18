@@ -95,6 +95,14 @@
 # --blend alpha
 # --dump_preds
 
+#
+# --ckpt benchmarks/bonus/outputs_A_twohead/06_pfn_twohead.ckpt
+# --outputs_dir benchmarks/bonus/outputs
+# --out_json benchmarks/bonus/outputs/07_waae_pfnonly_paper.json
+# --waae_mode paper
+# --use_ckpt_mu
+
+# benchmarks/bonus/07_eval_waae.py
 import os
 import json
 import argparse
@@ -274,6 +282,43 @@ def load_tau_pred_with_ckpt(X, ckpt_path, device="cpu"):
         "Please evaluate with a ckpt that contains 'tau_pfn' or keep the legacy reconstruction path."
     )
 
+class PFNLiteTwoHead(torch.nn.Module):
+    def __init__(self, in_dim: int, hidden: int = 256, depth: int = 3, dropout: float = 0.0):
+        super().__init__()
+        layers, d = [], in_dim
+        for _ in range(depth):
+            layers += [torch.nn.Linear(d, hidden), torch.nn.ReLU(inplace=True)]
+            if dropout > 0:
+                layers += [torch.nn.Dropout(p=dropout)]
+            d = hidden
+        layers += [torch.nn.Linear(d, 2)]
+        self.net = torch.nn.Sequential(*layers)
+    def forward(self, x):  # returns (n,2): [:,0]=mu0, [:,1]=mu1
+        return self.net(x)
+
+def load_mu_from_twohead_ckpt(X, ckpt_path, device="cpu"):
+    ckpt = torch.load(ckpt_path, map_location=device)
+    # 1) ckpt에 이미 저장돼 있으면 바로 사용
+    if isinstance(ckpt, dict) and ("mu0_pfn" in ckpt) and ("mu1_pfn" in ckpt):
+        mu0 = ckpt["mu0_pfn"].detach().cpu().numpy().astype(np.float32).reshape(-1)
+        mu1 = ckpt["mu1_pfn"].detach().cpu().numpy().astype(np.float32).reshape(-1)
+        assert len(mu0) == len(X) == len(mu1)
+        return mu0, mu1
+    # 2) 두헤드 모델로부터 추론
+    if isinstance(ckpt, dict) and ("cfg" in ckpt) and ckpt["cfg"].get("two_head", False) and ("model" in ckpt) and ("p" in ckpt):
+        p = int(ckpt["p"]); cfg = ckpt["cfg"]
+        hidden = int(cfg.get("hidden", 256)); depth = int(cfg.get("depth", 3)); dropout = float(cfg.get("dropout", 0.0))
+        model = PFNLiteTwoHead(in_dim=p, hidden=hidden, depth=depth, dropout=dropout).to(device)
+        model.load_state_dict(ckpt["model"], strict=True)
+        model.eval()
+        with torch.no_grad():
+            Xt = torch.from_numpy(X.astype(np.float32)).to(device)
+            out = model(Xt).detach().cpu().numpy().astype(np.float32)
+        mu0, mu1 = out[:,0], out[:,1]
+        assert len(mu0) == len(X) == len(mu1)
+        return mu0, mu1
+    raise KeyError("Two-head μ0/μ1 not found: ckpt must contain mu0_pfn/mu1_pfn OR (cfg.two_head & model & p).")
+
 
 def main():
     ap = argparse.ArgumentParser(
@@ -305,6 +350,9 @@ def main():
                          "'mean' uses w=gamma*zeta/mean(zeta), "
                          "'none' uses w=gamma*zeta, "
                          "'p95' → w=gamma*zeta/quantile(zeta,0.95).")
+    # ... 기존 argparse 정의에 이어서
+    ap.add_argument("--use_ckpt_mu", action="store_true",
+                    help="Use PFN two-head mu0/mu1 from ckpt (or infer via model) and evaluate PFN-only WAAE. Blending is ignored.")
 
     args = ap.parse_args()
 
@@ -352,6 +400,48 @@ def main():
         if args.blend != "alpha":
             print(f"[info] --waae_mode tau: ignoring --blend={args.blend} / --gamma={args.gamma}")
         print("[τ Report]")
+        print(json.dumps(report, indent=2))
+        with open(out_json, "w") as f:
+            json.dump(report, f, indent=2)
+        print(f"[OK] saved -> {out_json}")
+        return
+
+    # ----- PFN-only (two-head) 경로 -----
+    if args.use_ckpt_mu:
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        mu0_pfn, mu1_pfn = load_mu_from_twohead_ckpt(X, CKPT, device=device)
+
+        # paper 모드면 DR/AIPW 타깃 계산에 DML 산출물 필요
+        if args.waae_mode == "paper":
+            e_path = OUT_DIR / "e_hat.npy"
+            if not e_path.exists():
+                raise FileNotFoundError("paper mode needs e_hat.npy in --outputs_dir (step 04).")
+            e_hat = np.load(e_path)
+            mu0_dml = np.load(OUT_DIR / "mu0_hat.npy")
+            mu1_dml = np.load(OUT_DIR / "mu1_hat.npy")
+            dml_stats = waae_paper(Y, T, mu0_dml, mu1_dml, e_hat, mu0_dml, mu1_dml)
+            pfn_stats = waae_paper(Y, T, mu0_pfn, mu1_pfn, e_hat, mu0_dml, mu1_dml)
+        else:
+            mu0_dml = np.load(OUT_DIR / "mu0_hat.npy")
+            mu1_dml = np.load(OUT_DIR / "mu1_hat.npy")
+            dml_stats = waae_kpi(Y, T, mu0_dml, mu1_dml)
+            pfn_stats = waae_kpi(Y, T, mu0_pfn, mu1_pfn)
+
+        dml_waae, pfn_waae = dml_stats["waae"], pfn_stats["waae"]
+        rel_impr = (dml_waae - pfn_waae) / dml_waae if dml_waae > 0 else 0.0
+        target_ok = rel_impr >= 0.10
+
+        report = {
+            "mode": args.waae_mode,
+            "blend": {"mode": "pfn-only"},
+            "DML": dml_stats,
+            "PFN_only": pfn_stats,
+            "relative_improvement": float(rel_impr),
+            "target_met_10pct_reduction": bool(target_ok),
+            "ckpt_evaluated": str(CKPT),
+            "notes": "PFN-only (two-head) evaluation: μ0/μ1 from PFN. Blending ignored."
+        }
+        print("[WAAE Report]")
         print(json.dumps(report, indent=2))
         with open(out_json, "w") as f:
             json.dump(report, f, indent=2)

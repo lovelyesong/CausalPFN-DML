@@ -6,25 +6,22 @@
 #
 # Expected prior directory layout:
 #   prior_dir/
-#     shard_0000.npz
-#     shard_0001.npz
-#     ...
+#     shard_0000.npz, shard_0001.npz, ...
 # Each shard contains arrays with the same length n:
 #   X, mu0_true, mu1_true    (and possibly tau_true, e_true, T, Y)
 #
 # It saves:
 #   outputs_dir/06_pfn_twohead.ckpt   (PyTorch checkpoint)
+#     └─ includes PFN-only predictions on BONUS:
+#        mu0_pfn, mu1_pfn, tau_pfn (over BONUS X)
 #   outputs_dir/06_train_log_twohead.json
-#
-# Author: you + assistant
 # --------------------------------------------------------------------
 
-##
 # --prior_dir data/prior/bonus
+# --bonus_dir notebooks/bonus_benchmarks/data/bonus
 # --outputs_dir benchmarks/bonus/outputs_A_twohead
 # --epochs 10 --steps_per_epoch 400
 # --batch_size 1024 --lr 1e-3 --seed 2025
-
 
 import os
 import json
@@ -43,8 +40,6 @@ import torch.nn as nn
 class PFNLiteTwoHead(nn.Module):
     """
     Simple MLP with two-headed output: [mu0(x), mu1(x)].
-    This mirrors the shape/feel of the "PFN-lite" used in single-head tau mode,
-    but changes the last layer to output dimension=2.
     """
     def __init__(self, in_dim: int, hidden: int = 256, depth: int = 3, dropout: float = 0.0):
         super().__init__()
@@ -55,8 +50,7 @@ class PFNLiteTwoHead(nn.Module):
             if dropout > 0:
                 layers += [nn.Dropout(p=dropout)]
             d = hidden
-        # two heads in one linear: output = [mu0, mu1]
-        layers += [nn.Linear(d, 2)]
+        layers += [nn.Linear(d, 2)]  # output: [mu0, mu1]
         self.net = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -95,11 +89,13 @@ def main():
     ap = argparse.ArgumentParser(description="Train PFN-lite Two-Head (mu0, mu1) from prior shards.")
     ap.add_argument("--prior_dir", type=str, default="data/prior/bonus",
                     help="Folder containing shard_*.npz prior simulations.")
-    ap.add_argument("--outputs_dir", type=str, default="benchmarks/bonus/outputs_A",
+    ap.add_argument("--outputs_dir", type=str, default="benchmarks/bonus/outputs_A_twohead",
                     help="Where to write ckpt/logs.")
+    ap.add_argument("--bonus_dir", type=str, default="notebooks/bonus_benchmarks/data/bonus",
+                    help="Folder with BONUS X.npy (for exporting mu0_pfn/mu1_pfn on BONUS).")
     ap.add_argument("--epochs", type=int, default=10)
     ap.add_argument("--steps_per_epoch", type=int, default=400,
-                    help="Num of mini-batch updates per epoch (we sample with replacement).")
+                    help="Num of mini-batch updates per epoch (sampled with replacement).")
     ap.add_argument("--batch_size", type=int, default=1024)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--hidden", type=int, default=256)
@@ -112,6 +108,7 @@ def main():
 
     prior_dir = Path(args.prior_dir).resolve()
     out_dir = Path(args.outputs_dir).resolve()
+    bonus_dir = Path(args.bonus_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
 
     rng = np.random.default_rng(args.seed)
@@ -163,17 +160,44 @@ def main():
         log.append(entry)
         print(f"[epoch {epoch:03d}] loss_mse={avg_loss:.4f} elapsed={elapsed:.1f}s")
 
-    # Save checkpoint
+    # ---------------- Inference on BONUS X (for PFN-only WAAE) ----------------
+    bonus_X_path = bonus_dir / "X.npy"
+    if not bonus_X_path.exists():
+        raise FileNotFoundError(f"BONUS X not found at {bonus_X_path} (set --bonus_dir correctly).")
+    X_bonus = np.load(bonus_X_path).astype(np.float32)
+    if X_bonus.shape[1] != p:
+        raise ValueError(f"BONUS X has p={X_bonus.shape[1]} but model was trained with p={p}.")
+
+    model.eval()
+    with torch.no_grad():
+        Xt = torch.from_numpy(X_bonus).to(device)
+        pred = model(Xt)  # (n,2)
+        if pred.ndim != 2 or pred.shape[1] != 2:
+            raise RuntimeError("Two-head model must output shape (n,2).")
+        mu0_bonus = pred[:, 0].detach().cpu().numpy().astype(np.float32)
+        mu1_bonus = pred[:, 1].detach().cpu().numpy().astype(np.float32)
+        tau_bonus = (mu1_bonus - mu0_bonus).astype(np.float32)
+
+    # ---------------- Save checkpoint (includes PFN-only μ over BONUS) ----------------
     ckpt_path = out_dir / "06_pfn_twohead.ckpt"
     cfg = dict(
         hidden=args.hidden, depth=args.depth, dropout=args.dropout,
-        two_head=True,  # <== IMPORTANT FLAG
+        two_head=True,  # IMPORTANT FLAG
     )
     torch.save(
         {
             "cfg": cfg,
             "p": p,
             "model": model.state_dict(),
+            # PFN-only predictions on BONUS (for 07_eval_waae --use_ckpt_mu)
+            "mu0_pfn": torch.from_numpy(mu0_bonus),
+            "mu1_pfn": torch.from_numpy(mu1_bonus),
+            "tau_pfn": torch.from_numpy(tau_bonus),
+            "meta": {
+                "bonus_dir": str(bonus_dir),
+                "trained_from": str(prior_dir),
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            },
         },
         ckpt_path,
     )

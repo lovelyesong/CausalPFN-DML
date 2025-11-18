@@ -49,6 +49,17 @@
 #   --bonus_dir notebooks/bonus_benchmarks/data/bonus \
 #   --outputs_dir benchmarks/bonus/outputs_CPFN_only
 
+## DML 을 outputs mlp05로 씀
+# python benchmarks/bonus/06_pfn_cate_blend.py \
+#   --bonus_dir notebooks/bonus_benchmarks/data/bonus \
+#   --dml_outputs_dir benchmarks/bonus/outputs_mlp05 \
+#   --shift_outputs_dir benchmarks/bonus/outputs_mlp05 \
+#   --outputs_dir benchmarks/bonus/outputs_CPFN_tau \
+#   --gamma 0.8
+
+
+
+
 # benchmarks/bonus/06_pfn_cate_blend.py
 # ---------------------------------------------------------------------
 # Method-1 (using ORIGINAL CausalPFN from vdblm/CausalPFN):

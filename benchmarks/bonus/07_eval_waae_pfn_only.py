@@ -38,6 +38,11 @@
 # --out_json benchmarks/bonus/outputs/07_waae_report_A_twohead_kpi.json
 # --waae_mode kpi
 
+# paper
+# --ckpt benchmarks/bonus/outputs_A_twohead/06_pfn_twohead.ckpt
+# --out_json benchmarks/bonus/outputs/07_waae_report_A_twohead_paper.json
+# --waae_mode paper
+
 
 import os
 import json
